@@ -1,0 +1,37 @@
+/** Downloadable sample resume text (parser-friendly formatting). */
+export const SAMPLE_RESUME_TEXT = `JANE DOE
+Product Designer
+San Francisco CA | (555) 123-4567 | jane.doe@email.com | linkedin.com/in/janedoe
+
+SUMMARY
+Product designer with 6+ years in B2B SaaS.
+Skilled in research · prototyping · and cross-functional collaboration.
+
+EXPERIENCE
+Senior Product Designer | Acme Corp
+Jan 2021 – Present
+
+• Led redesign of onboarding flow, increasing activation by 18%
+• Partnered with engineering to ship design system components used across 4 products
+• Conducted user interviews and usability tests to validate roadmap priorities
+• Presented quarterly design reviews to executive stakeholders
+
+Product Designer | Startup Labs
+Jun 2018 – Dec 2020
+
+• Owned end-to-end design for mobile and web analytics dashboards
+• Created wireframes, high-fidelity mocks, and developer-ready specs in Figma
+• Reduced support tickets by 22% through improved navigation and empty states
+
+EDUCATION
+B.A. Interaction Design | State University | 2018
+
+SKILLS
+Figma · UX research · Prototyping · Design systems · HTML/CSS · Accessibility
+
+PROJECTS
+Design Portfolio | Personal
+2023 – Present
+
+• Built portfolio site with case studies highlighting measurable design outcomes
+• Implemented responsive layouts and optimized Lighthouse performance scores`;
