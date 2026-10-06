@@ -36,12 +36,61 @@ export const TemplatePreview = memo(function TemplatePreview({
     const inner = innerRef.current;
     if (!outer || !inner) return;
 
+    // #region agent log
+    let __dbgRoCount = 0;
+    // #endregion
     const update = () => {
       const available = outer.clientWidth;
       const nextScale = Math.min(1, available / PAGE_WIDTH_PX);
+      const nextScaledHeight = inner.offsetHeight * nextScale;
+      const nextContentHeight = inner.offsetHeight;
+      // #region agent log
+      __dbgRoCount += 1;
+      if (__dbgRoCount <= 30 || __dbgRoCount % 50 === 0) {
+        try {
+          fetch("http://127.0.0.1:7242/ingest/f6f0b1e2-debug", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              location: "template-preview.tsx:update",
+              message: "ResizeObserver update",
+              data: {
+                count: __dbgRoCount,
+                available,
+                nextScale,
+                nextScaledHeight,
+                nextContentHeight,
+              },
+              timestamp: Date.now(),
+              hypothesisId: "A",
+            }),
+          }).catch(() => {});
+          // Also write via sync beacon path for crash-before-network cases
+          const line =
+            JSON.stringify({
+              location: "template-preview.tsx:update",
+              message: "ResizeObserver update",
+              data: {
+                count: __dbgRoCount,
+                available,
+                nextScale,
+                nextScaledHeight,
+                nextContentHeight,
+              },
+              timestamp: Date.now(),
+              hypothesisId: "A",
+            }) + "\n";
+          (
+            window as unknown as { __dbgAppend?: (s: string) => void }
+          ).__dbgAppend?.(line);
+        } catch {
+          /* ignore */
+        }
+      }
+      // #endregion
       setScale(nextScale);
-      setScaledHeight(inner.offsetHeight * nextScale);
-      setContentHeight(inner.offsetHeight);
+      setScaledHeight(nextScaledHeight);
+      setContentHeight(nextContentHeight);
     };
 
     update();

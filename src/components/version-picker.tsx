@@ -27,14 +27,66 @@ export function VersionPicker({
 }: VersionPickerProps) {
   const [versions, setVersions] = useState<ResumeVersion[]>([]);
 
+  // Load local versions only — never notify the parent from mount/effect.
+  // Notifying on mount remounts this component when the parent uses
+  // key={versionKey} + onVersionsChange={() => setVersionKey(...)}, which
+  // previously caused an infinite remount loop (Chrome Aw Snap / OOM).
+  const reload = useCallback(() => {
+    setVersions(loadVersions());
+  }, []);
+
   const refresh = useCallback(() => {
     setVersions(loadVersions());
+    // #region agent log
+    try {
+      const w = window as unknown as { __dbgVpRefresh?: number };
+      w.__dbgVpRefresh = (w.__dbgVpRefresh ?? 0) + 1;
+      if (w.__dbgVpRefresh <= 40 || w.__dbgVpRefresh % 50 === 0) {
+        fetch("http://127.0.0.1:7242/ingest/f6f0b1e2-debug", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            location: "version-picker.tsx:refresh",
+            message: "VersionPicker refresh (mutation)",
+            data: { count: w.__dbgVpRefresh },
+            timestamp: Date.now(),
+            hypothesisId: "E",
+            runId: "post-fix",
+          }),
+        }).catch(() => {});
+      }
+    } catch {
+      /* ignore */
+    }
+    // #endregion
     onVersionsChange?.();
   }, [onVersionsChange]);
 
   useEffect(() => {
-    queueMicrotask(() => refresh());
-  }, [refresh]);
+    // #region agent log
+    try {
+      const w = window as unknown as { __dbgVpEffect?: number };
+      w.__dbgVpEffect = (w.__dbgVpEffect ?? 0) + 1;
+      if (w.__dbgVpEffect <= 40 || w.__dbgVpEffect % 50 === 0) {
+        fetch("http://127.0.0.1:7242/ingest/f6f0b1e2-debug", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            location: "version-picker.tsx:useEffect",
+            message: "VersionPicker effect (load only)",
+            data: { count: w.__dbgVpEffect },
+            timestamp: Date.now(),
+            hypothesisId: "E",
+            runId: "post-fix",
+          }),
+        }).catch(() => {});
+      }
+    } catch {
+      /* ignore */
+    }
+    // #endregion
+    queueMicrotask(() => reload());
+  }, [reload]);
 
   const handleDuplicate = (id: string) => {
     const copy = duplicateVersion(id);
