@@ -53,7 +53,12 @@
 
 **Still open:** Production deploy health; remaining mobile device QA; P1 Chrome extension + application board
 
-**Key files:** `proxy.ts`, `extract-jd-heuristic.ts`, `src/app/api/**`, `ai-model.ts`, `ai-generate.ts`, `site-header.tsx`, `page.tsx`, `tailoring-workspace.tsx`
+**Key files:** `proxy.ts`, `extract-jd-heuristic.ts`, `src/app/api/**`, `ai-model.ts`, `ai-generate.ts`, `site-header.tsx`, `page.tsx`, `tailoring-workspace.tsx`, `version-picker.tsx`
+
+### 2026-10-06 — Fix: Analyze tab OOM (VersionPicker remount loop)
+
+- [x] **Root cause** — `VersionPicker` called `onVersionsChange` from a mount effect while parent remounted it via `key={versionKey}`, causing infinite remounts / Chrome Aw Snap (error 5)
+- [x] **Fix** — load versions on mount without notifying parent; notify only after user mutations; stabilize parent callback with `useCallback`
 
 ### 2026-07-17 — ATS spec gap closure (heuristics)
 
