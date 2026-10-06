@@ -273,32 +273,6 @@ export function TailoringWorkspace({ versionId }: TailoringWorkspaceProps) {
 
   const persist = useCallback(
     (next: AppSession) => {
-      // #region agent log
-      try {
-        const w = window as unknown as { __dbgPersistCount?: number };
-        w.__dbgPersistCount = (w.__dbgPersistCount ?? 0) + 1;
-        if (w.__dbgPersistCount <= 20 || w.__dbgPersistCount % 25 === 0) {
-          fetch("http://127.0.0.1:7242/ingest/f6f0b1e2-debug", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              location: "tailoring-workspace.tsx:persist",
-              message: "persist call",
-              data: {
-                count: w.__dbgPersistCount,
-                hasParsedJD: Boolean(next.parsedJD),
-                coverageItems: next.coverage?.items?.length ?? 0,
-                bullets: next.bullets?.length ?? 0,
-              },
-              timestamp: Date.now(),
-              hypothesisId: "B",
-            }),
-          }).catch(() => {});
-        }
-      } catch {
-        /* ignore */
-      }
-      // #endregion
       if (persistTimerRef.current) {
         clearTimeout(persistTimerRef.current);
         persistTimerRef.current = null;
@@ -509,43 +483,9 @@ export function TailoringWorkspace({ versionId }: TailoringWorkspaceProps) {
     if (!session) return;
     setError(null);
     setAnalyzing(true);
-    // #region agent log
-    const __dbgT0 = Date.now();
-    const __dbgLog = (message: string, data: Record<string, unknown>, hypothesisId: string) => {
-      try {
-        fetch("http://127.0.0.1:7242/ingest/f6f0b1e2-debug", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            location: "tailoring-workspace.tsx:handleAnalyzeJd",
-            message,
-            data,
-            timestamp: Date.now(),
-            hypothesisId,
-          }),
-        }).catch(() => {});
-      } catch {
-        /* ignore */
-      }
-    };
-    __dbgLog("analyze start", { jdLen: session.jdText.length, resumeLen: session.resumeText.length }, "B");
-    // #endregion
     try {
       let parsedJD = extractJdHeuristic(session.jdText);
       let warning: string | null = null;
-      // #region agent log
-      __dbgLog(
-        "heuristic done",
-        {
-          ms: Date.now() - __dbgT0,
-          hard: parsedJD.skills?.hard?.length ?? 0,
-          soft: parsedJD.skills?.soft?.length ?? 0,
-          resp: parsedJD.responsibilities.length,
-          keywords: parsedJD.keywords.length,
-        },
-        "C",
-      );
-      // #endregion
 
       try {
         const res = await fetch("/api/extract-jd", {
@@ -560,19 +500,6 @@ export function TailoringWorkspace({ versionId }: TailoringWorkspaceProps) {
           else if (data.source === "heuristic") {
             warning = "Analyzed offline (rules). AI refine unavailable or not configured.";
           }
-          // #region agent log
-          __dbgLog(
-            "api extract done",
-            {
-              ms: Date.now() - __dbgT0,
-              source: data.source,
-              hard: parsedJD.skills?.hard?.length ?? 0,
-              soft: parsedJD.skills?.soft?.length ?? 0,
-              resp: parsedJD.responsibilities.length,
-            },
-            "C",
-          );
-          // #endregion
         } else if (!res.ok) {
           warning =
             typeof data.error === "string"
@@ -586,45 +513,13 @@ export function TailoringWorkspace({ versionId }: TailoringWorkspaceProps) {
       const nextSession = { ...session, parsedJD };
       const checks = runChecks(session.resumeText, nextSession, templateId);
       const hydrated = { ...nextSession, ...checks };
-      // #region agent log
-      let __dbgPersistSize = 0;
-      try {
-        __dbgPersistSize = JSON.stringify(hydrated).length;
-      } catch {
-        __dbgPersistSize = -1;
-      }
-      __dbgLog(
-        "checks done before persist",
-        {
-          ms: Date.now() - __dbgT0,
-          coverageItems: hydrated.coverage?.items?.length ?? 0,
-          bullets: hydrated.bullets?.length ?? 0,
-          matchOverall: hydrated.matchScore?.overall ?? null,
-          persistJsonBytes: __dbgPersistSize,
-        },
-        "C",
-      );
-      // #endregion
       persist(hydrated);
-      // #region agent log
-      __dbgLog("persist called", { ms: Date.now() - __dbgT0 }, "B");
-      // #endregion
       recordApplicationAnalysis(hydrated, session.activeVersionId);
       setHistoryKey((k) => k + 1);
       if (warning) setError(warning);
       if (!isDesktop) setMode("checks");
-      // #region agent log
-      __dbgLog("analyze complete", { ms: Date.now() - __dbgT0, warning }, "B");
-      // #endregion
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
-      // #region agent log
-      __dbgLog(
-        "analyze error",
-        { ms: Date.now() - __dbgT0, err: e instanceof Error ? e.message : String(e) },
-        "B",
-      );
-      // #endregion
     } finally {
       setAnalyzing(false);
     }
@@ -812,37 +707,7 @@ export function TailoringWorkspace({ versionId }: TailoringWorkspaceProps) {
 
   const skillMappings = useMemo(() => {
     if (!session?.parsedJD || !session.bullets.length) return [];
-    // #region agent log
-    const __dbgMapT0 = Date.now();
-    // #endregion
-    const mapped = mapSkillsToResume(session.bullets, session.parsedJD);
-    // #region agent log
-    try {
-      const w = window as unknown as { __dbgMapCount?: number };
-      w.__dbgMapCount = (w.__dbgMapCount ?? 0) + 1;
-      if (w.__dbgMapCount <= 30 || w.__dbgMapCount % 25 === 0) {
-        fetch("http://127.0.0.1:7242/ingest/f6f0b1e2-debug", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            location: "tailoring-workspace.tsx:skillMappings",
-            message: "skillMappings computed",
-            data: {
-              count: w.__dbgMapCount,
-              mapped: mapped.length,
-              ms: Date.now() - __dbgMapT0,
-              bullets: session.bullets.length,
-            },
-            timestamp: Date.now(),
-            hypothesisId: "D",
-          }),
-        }).catch(() => {});
-      }
-    } catch {
-      /* ignore */
-    }
-    // #endregion
-    return mapped;
+    return mapSkillsToResume(session.bullets, session.parsedJD);
   }, [session]);
 
   const trimSuggestions = useMemo(() => {
