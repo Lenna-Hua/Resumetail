@@ -11,11 +11,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Phase** | ATS spec gap closure (heuristics) shipped; Phase 4 growth continues |
-| **Last updated** | 2026-07-17 (ATS gap closure) |
-| **Deployed URL** | https://resutail.vercel.app |
-| **Dev server** | Running at http://localhost:3000 (`npm.cmd run dev`) |
-| **Repo** | `h:\ResuTail` |
+| **Phase** | P0 trust/access (guest mode + AI routes + offline Analyze) |
+| **Last updated** | 2026-10-06 |
+| **Deployed URL** | https://resutail.vercel.app (verify deploy health) |
+| **Dev server** | `npm run dev` → http://localhost:3000 |
+| **Repo** | ResuTail |
 
 ---
 
@@ -31,8 +31,8 @@
 | **2f** | **Mobile-first IA** | **P3 done — QA pending** | IndexedDB, backup nudge, PWA; 12-item device QA remaining |
 | **2c** | **Optional AI extensions** | **Done** | Cover letter, tone presets, humanize |
 | **2d** | **Export & analytics** | **Done** | DOCX export, Vercel Web Analytics |
-| 3 | Persistence & Polish | Done | History, share, ATS tooltips, Supabase auth (required) + cloud sync |
-| 4 | Growth & Extensions | In progress | Groq AI fallback; ATS gap closure (heuristics); extension deferred |
+| 3 | Persistence & Polish | Done | History, share, ATS tooltips, Supabase auth (**optional sync**) + cloud sync |
+| 4 | Growth & Extensions | In progress | Groq fallback; ATS heuristics; **P0 guest access + AI routes restored**; extension next |
 
 **Legend:** `Not started` · `In progress` · `Done` · `Skipped`
 
@@ -41,6 +41,19 @@
 ## Completed steps
 
 <!-- Add newest entries at the TOP of this section -->
+
+### 2026-10-06 — P0: Guest access, privacy honesty, AI routes, offline Analyze
+
+- [x] **Guest `/app`** — `proxy.ts` no longer redirects unauthenticated users; auth is for optional sync only
+- [x] **Privacy copy** — landing documents local-first IndexedDB + optional Supabase `user_data` sync
+- [x] **AI routes restored** — `extract-jd`, `tailor-bullet`, `cover-letter`, `humanize` + `ai-model` / `ai-generate` / rate-limit (removed from `.gitignore`)
+- [x] **Heuristic JD extract** — `extract-jd-heuristic.ts`; Analyze works offline / without API keys; API falls back on quota/errors
+- [x] **Header / auth UX** — always show Open workspace; Sign in secondary; Continue as guest on sign-in/up
+- [x] **Docs** — README, `plan.md` Phase 5, progress log
+
+**Still open:** Production deploy health; remaining mobile device QA; P1 Chrome extension + application board
+
+**Key files:** `proxy.ts`, `extract-jd-heuristic.ts`, `src/app/api/**`, `ai-model.ts`, `ai-generate.ts`, `site-header.tsx`, `page.tsx`, `tailoring-workspace.tsx`
 
 ### 2026-07-17 — ATS spec gap closure (heuristics)
 
@@ -551,6 +564,6 @@
 - [x] Desktop split-pane at `lg:`
 
 ### Phase 3
-- [ ] Supabase auth (opt-in) — deferred
+- [x] Supabase auth (optional for sync — guest workspace allowed)
 - [x] Application history
 - [x] Share links + ATS tooltips

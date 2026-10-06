@@ -23,10 +23,18 @@ export default async function SignInPage({
         <Card>
           <CardHeader>
             <CardTitle>Sign in</CardTitle>
-            <CardDescription>Sign in to sync your resumes across devices.</CardDescription>
+            <CardDescription>
+              Optional — sync resumes across devices. You can use the workspace without an account.
+            </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <AuthForm mode="sign-in" redirectTo={redirectTo} />
+            <p className="text-center text-sm text-muted-foreground">
+              Prefer local-only?{" "}
+              <Link href="/app" className="font-medium text-foreground underline-offset-4 hover:underline">
+                Continue as guest
+              </Link>
+            </p>
           </CardContent>
         </Card>
       </div>

@@ -36,6 +36,7 @@ import { recordApplicationAnalysis } from "@/lib/application-history";
 import { copyShareLink } from "@/lib/share-link";
 import { ApplicationHistoryPanel } from "@/components/application-history-panel";
 import { jdToSummary } from "@/lib/jd-summary";
+import { extractJdHeuristic } from "@/lib/extract-jd-heuristic";
 import { exportResumePdf } from "@/lib/pdf-export";
 import { exportResumeDocx } from "@/lib/docx-export";
 import { ChecksPanel } from "@/components/checks-panel";
@@ -479,21 +480,39 @@ export function TailoringWorkspace({ versionId }: TailoringWorkspaceProps) {
     setError(null);
     setAnalyzing(true);
     try {
-      const res = await fetch("/api/extract-jd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jdText: session.jdText }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to analyze job description");
+      let parsedJD = extractJdHeuristic(session.jdText);
+      let warning: string | null = null;
 
-      const parsedJD = normalizeParsedJD(data.parsedJD);
+      try {
+        const res = await fetch("/api/extract-jd", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jdText: session.jdText }),
+        });
+        const data = await res.json();
+        if (res.ok && data.parsedJD) {
+          parsedJD = normalizeParsedJD(data.parsedJD);
+          if (typeof data.warning === "string") warning = data.warning;
+          else if (data.source === "heuristic") {
+            warning = "Analyzed offline (rules). AI refine unavailable or not configured.";
+          }
+        } else if (!res.ok) {
+          warning =
+            typeof data.error === "string"
+              ? `${data.error} Using offline analysis.`
+              : "AI analyze unavailable — using offline analysis.";
+        }
+      } catch {
+        warning = "Network unavailable — used offline job analysis.";
+      }
+
       const nextSession = { ...session, parsedJD };
       const checks = runChecks(session.resumeText, nextSession, templateId);
       const hydrated = { ...nextSession, ...checks };
       persist(hydrated);
       recordApplicationAnalysis(hydrated, session.activeVersionId);
       setHistoryKey((k) => k + 1);
+      if (warning) setError(warning);
       if (!isDesktop) setMode("checks");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");

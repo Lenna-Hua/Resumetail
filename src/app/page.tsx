@@ -32,9 +32,9 @@ const features = [
   },
   {
     icon: Shield,
-    title: "Private by default",
+    title: "Local-first, optional sync",
     description:
-      "Resume versions and job text stay in your browser. File uploads parse locally. Checks run without any AI calls.",
+      "Guest mode keeps versions in your browser. Sign in only if you want cloud sync across devices. Checks run without AI.",
   },
 ];
 
@@ -170,24 +170,30 @@ export default function HomePage() {
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
                 <p>
-                  <strong className="text-foreground">What stays on your device:</strong> Resume
-                  versions, job descriptions, and edits are stored in your browser (IndexedDB with localStorage cache).
-                  File uploads are parsed locally — nothing is uploaded to our servers.
+                  <strong className="text-foreground">Local-first (default):</strong> Resume
+                  versions, job descriptions, and edits stay in your browser (IndexedDB with a
+                  localStorage cache). File uploads are parsed on-device. You can use the full
+                  checker workspace as a guest — no account required.
+                </p>
+                <p>
+                  <strong className="text-foreground">Optional account sync:</strong> If you sign
+                  in, we store a copy of your workspace data in Supabase (`user_data`) so versions
+                  follow you across devices. Sync is opt-in; guest mode never writes to the cloud.
                 </p>
                 <p>
                   <strong className="text-foreground">What runs without AI:</strong> Match scoring,
-                  keyword gaps, ATS formatting checks, and plain-text preview all use rules in your
-                  browser. No API calls required.
+                  keyword gaps, ATS formatting checks, offline JD analyze (heuristics), and
+                  plain-text preview all run in your browser.
                 </p>
                 <p>
-                  <strong className="text-foreground">When AI is used:</strong> Only if you click
-                  &quot;Analyze job description&quot; or &quot;Rewrite&quot; on a bullet. That text
-                  is sent to our serverless API (Google Gemini). We do not store your resume in a
-                  database.
+                  <strong className="text-foreground">When AI is used:</strong> Only on explicit
+                  actions — AI-refined Analyze (when keys are configured), Rewrite bullet, cover
+                  letter, or Humanize. That text is sent to our serverless API (Gemini, with
+                  optional Groq fallback). We do not use AI content for ads or model training.
                 </p>
                 <p>
                   <strong className="text-foreground">AI limits:</strong> Roughly 20 AI calls per
-                  day per IP on the free tier.
+                  day per IP on the free tier. Offline Analyze still works when the quota is hit.
                 </p>
                 <p>
                   Use <strong className="text-foreground">Clear data</strong> in the app anytime to
