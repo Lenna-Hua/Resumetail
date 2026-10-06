@@ -32,8 +32,10 @@ export function SiteHeader() {
         >
           <Shield className="size-3.5 shrink-0" />
           <span className="min-w-0 truncate sm:whitespace-normal">
-            <span className="sm:hidden">Private · stays in browser</span>
-            <span className="hidden sm:inline">Private session · data stays in your browser</span>
+            <span className="sm:hidden">Local-first · optional sync</span>
+            <span className="hidden sm:inline">
+              Local-first · optional account sync
+            </span>
           </span>
         </div>
 
@@ -44,27 +46,26 @@ export function SiteHeader() {
           >
             Templates
           </Link>
+          <ButtonLink href="/app" size="sm" className="min-h-9 whitespace-nowrap px-2.5 sm:px-3">
+            <span className="sm:hidden">Workspace</span>
+            <span className="hidden sm:inline">Open workspace</span>
+          </ButtonLink>
           {!loading && user ? (
-            <>
-              <ButtonLink href="/app" size="sm" className="min-h-9 whitespace-nowrap px-2.5 sm:px-3">
-                <span className="sm:hidden">Workspace</span>
-                <span className="hidden sm:inline">Open workspace</span>
-              </ButtonLink>
-              <form action={signOut}>
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="sm"
-                  className="min-h-9 whitespace-nowrap px-2.5 sm:px-3"
-                >
-                  Sign out
-                </Button>
-              </form>
-            </>
+            <form action={signOut}>
+              <Button
+                type="submit"
+                variant="ghost"
+                size="sm"
+                className="min-h-9 whitespace-nowrap px-2.5 sm:px-3"
+              >
+                Sign out
+              </Button>
+            </form>
           ) : (
             <ButtonLink
               href="/sign-in"
               size="sm"
+              variant="outline"
               className="min-h-9 whitespace-nowrap px-2.5 sm:px-3"
             >
               Sign in

@@ -27,14 +27,20 @@ export function VersionPicker({
 }: VersionPickerProps) {
   const [versions, setVersions] = useState<ResumeVersion[]>([]);
 
+  // Load on mount only — do not call onVersionsChange here. Parent remounts
+  // via key={versionKey} when notified; notifying from mount caused an OOM loop.
+  const reload = useCallback(() => {
+    setVersions(loadVersions());
+  }, []);
+
   const refresh = useCallback(() => {
     setVersions(loadVersions());
     onVersionsChange?.();
   }, [onVersionsChange]);
 
   useEffect(() => {
-    queueMicrotask(() => refresh());
-  }, [refresh]);
+    queueMicrotask(() => reload());
+  }, [reload]);
 
   const handleDuplicate = (id: string) => {
     const copy = duplicateVersion(id);

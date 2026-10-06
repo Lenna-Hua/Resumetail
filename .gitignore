@@ -34,13 +34,6 @@ yarn-error.log*
 .env*
 !.env.example
 
-# Private server AI — keep local only; not published to the public repo
-/src/app/api/
-/src/lib/ai-generate.ts
-/src/lib/ai-model.ts
-/src/lib/api-errors.ts
-/src/lib/rate-limit.ts
-
 # vercel
 .vercel
 

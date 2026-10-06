@@ -24,11 +24,17 @@ export default async function SignUpPage({
           <CardHeader>
             <CardTitle>Create your account</CardTitle>
             <CardDescription>
-              One account keeps your resumes, library, and versions synced everywhere.
+              Optional — keep resumes, library, and versions synced across devices. Local guest use
+              still works without an account.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <AuthForm mode="sign-up" redirectTo={redirectTo} />
+            <p className="text-center text-sm text-muted-foreground">
+              <Link href="/app" className="font-medium text-foreground underline-offset-4 hover:underline">
+                Continue as guest
+              </Link>
+            </p>
           </CardContent>
         </Card>
       </div>

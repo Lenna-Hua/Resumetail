@@ -53,7 +53,7 @@ export function JdInsightsPanel({
       <CardHeader>
         <CardTitle className="text-base">Job description</CardTitle>
         <CardDescription>
-          Paste the target posting to see keyword gaps and match insights.
+          Paste the target posting. Analyze works offline with rules; AI refines when configured.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

@@ -81,12 +81,12 @@
 | String similarity | JD keyword coverage |
 | Heuristics | Bullet strength (metrics, action verbs) |
 
-### Storage & auth (deferred)
+### Storage & auth
 
 | Service | Free tier | When |
 |---------|-----------|------|
-| **localStorage / IndexedDB** | Free | MVP — sessions + resume versions |
-| **Supabase** | 500 MB DB, 50K MAU | Phase 4 if accounts needed |
+| **localStorage / IndexedDB** | Free | Default — guest sessions + resume versions |
+| **Supabase** | 500 MB DB, 50K MAU | Optional account sync (Phase 3) |
 
 ---
 
@@ -151,10 +151,43 @@ No linear wizard for the core loop — import and JD are always reachable via mo
 | **2f** | **Mobile-first IA** | **P3 done — QA pending** | IndexedDB, backup nudge, PWA manifest; manual device QA remaining |
 | 2c | Optional AI extensions | Done | Cover letter, tone, humanize |
 | 2d | Export & analytics | Done | DOCX export, Vercel Analytics |
-| 3 | Persistence & polish | Done | Supabase auth (required) + cloud sync, application history, share links, ATS tooltips |
-| 4 | Growth | In progress | Groq fallback done; ATS gap closure (heuristics) done 2026-07-17; extension deferred |
+| 3 | Persistence & polish | Done | Supabase auth (**optional** for sync) + cloud sync, application history, share links, ATS tooltips |
+| 4 | Growth | In progress | Groq fallback done; ATS gap closure done; **P0 trust/access** in progress; extension deferred |
 
 ---
+
+## Phase 5 — Trust, access & growth (active)
+
+> Product research (2026-10): keep checker-first moat; fix auth/privacy contradiction; close Teal-style workflow gap next.
+
+### P0 — Trust & access (now)
+
+- [x] Guest `/app` access (no forced sign-in)
+- [x] Honest privacy copy (local-first + optional sync)
+- [x] Restore AI API routes + model helpers (keys still env-only)
+- [x] Offline / heuristic JD Analyze fallback
+- [x] Header + sign-in UX for guest vs sync
+- [ ] Production deploy health + env verification
+- [ ] Remaining mobile device QA (iOS/Android PDF)
+
+### P1 — Workflow moat (next)
+
+- [ ] Chrome extension: capture JD → Tailor mode
+- [ ] Application board stages (Saved → Applied → …)
+- [ ] Deep link from board card → workspace
+- [ ] Post-export onboarding (extension / save application)
+
+### P2 — Scoring credibility
+
+- [ ] Section-aware keyword placement
+- [ ] Template ATS plain-text round-trip fixtures
+- [ ] Score regression snapshots
+
+### P3 — Scale
+
+- [ ] Split `tailoring-workspace.tsx`
+- [ ] Unit tests for score/coverage/parser
+- [ ] Monetize AI/sync only (never the checker)
 
 ---
 
@@ -367,7 +400,7 @@ No linear wizard for the core loop — import and JD are always reachable via mo
 
 ## Phase 3 — Persistence & polish
 
-- [x] Supabase auth (required for `/app`) + first-time-sign-in welcome instructions
+- [x] Supabase auth (optional — guest can use `/app`; account enables sync)
 - [x] Cloud data sync (`user_data` jsonb table, pull on login / debounced push)
 - [x] Application history per JD
 - [x] View-only share links
